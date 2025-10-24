@@ -648,3 +648,65 @@ float calculateRouteDistance(int route[], int n) {
     }
     return total;
 }
+
+// Performance Reports
+void performanceReports() {
+    if(delivery_count == 0) {
+        printf("\nNo deliveries completed yet!\n");
+        return;
+    }
+
+    printf("\n--- PERFORMANCE REPORTS ---\n");
+
+    // a. Total Deliveries Completed
+    printf("a. Total Deliveries Completed: %d\n", delivery_count);
+
+    // b. Total Distance Covered
+    float total_distance = 0;
+    for(int i = 0; i < delivery_count; i++) {
+        total_distance += deliveries[i].distance;
+    }
+    printf("b. Total Distance Covered: %.2f km\n", total_distance);
+
+    // c. Average Delivery Time
+    float total_time = 0;
+    for(int i = 0; i < delivery_count; i++) {
+        total_time += deliveries[i].estimated_time;
+    }
+    printf("c. Average Delivery Time: %.2f hours\n", total_time / delivery_count);
+
+    // d. Total Revenue and Profit
+    float total_revenue = 0, total_profit = 0;
+    for(int i = 0; i < delivery_count; i++) {
+        total_revenue += deliveries[i].customer_charge;
+        total_profit += deliveries[i].profit;
+    }
+    printf("d. Total Revenue: %.2f LKR\n", total_revenue);
+    printf("   Total Profit: %.2f LKR\n", total_profit);
+
+    // e. Longest and Shortest Routes
+    float longest_route = 0, shortest_route = 0;
+    int longest_index = -1, shortest_index = -1;
+
+    for(int i = 0; i < delivery_count; i++) {
+        if(deliveries[i].distance > longest_route) {
+            longest_route = deliveries[i].distance;
+            longest_index = i;
+        }
+        if(deliveries[i].distance < shortest_route) {
+            shortest_route = deliveries[i].distance;
+            shortest_index = i;
+        }
+    }
+
+    if(longest_index != -1) {
+        printf("e. Longest Route: %.2f km (%s to %s)\n",
+               longest_route, cities[deliveries[longest_index].source_city],
+               cities[deliveries[longest_index].dest_city]);
+    }
+    if(shortest_index != -1) {
+        printf("   Shortest Route: %.2f km (%s to %s)\n",
+               shortest_route, cities[deliveries[shortest_index].source_city],
+               cities[deliveries[shortest_index].dest_city]);
+    }
+}
