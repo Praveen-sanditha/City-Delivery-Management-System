@@ -378,6 +378,83 @@ void vehicleManagement() {
     for(int i = 0; i < 3; i++) {
         printf("%-10s %-12d %-15.2f %-12.2f %-15.2f\n",
                vehicles[i].name, vehicles[i].capacity, vehicles[i].rate_per_km,
-               vehicles[i].avg_speed, vehicles[i].fuel_efficiency)
+               vehicles[i].avg_speed, vehicles[i].fuel_efficiency);
     }
+}
+
+// Delivery Request
+void deliveryRequest() {
+    if(city_count < 2) {
+        printf("\nNeed at least 2 cities for delivery!\n");
+        return;
+    }
+
+    if(delivery_count >= MAX_DELIVERIES) {
+        printf("\nMaximum delivery records reached!\n");
+        return;
+    }
+
+    displayCities();
+    int source, dest, weight, vehicle_type;
+
+    printf("\n--- NEW DELIVERY REQUEST ---\n");
+    printf("Enter source city number: ");
+    scanf("%d", &source);
+    printf("Enter destination city number: ");
+    scanf("%d", &dest);
+
+    if(source < 1 || source > city_count || dest < 1 || dest > city_count) {
+        printf("\nInvalid city numbers!\n");
+        return;
+    }
+
+    if(source == dest) {
+        printf("\nSource and destination cannot be the same!\n");
+        return;
+    }
+
+    printf("Enter weight (kg): ");
+    scanf("%d", &weight);
+
+    if(weight <= 0) {
+        printf("\nWeight must be positive!\n");
+        return;
+    }
+
+    vehicleManagement();
+    printf("\n1 Van \n2 Truck  \n3 Lorry\n ");
+    printf("\nSelect vehicle type enter the vehicle number : ");
+    scanf("%d", &vehicle_type);
+
+    if(vehicle_type < 1 || vehicle_type > 3) {
+        printf("\nInvalid vehicle type!\n");
+        return;
+    }
+
+    // Check weight capacity
+    if(weight > vehicles[vehicle_type-1].capacity) {
+        printf("\nWeight exceeds vehicle capacity! %s can carry only %d kg.\n",
+               vehicles[vehicle_type-1].name, vehicles[vehicle_type-1].capacity);
+        return;
+    }
+
+    // Calculate direct distance
+    float direct_distance = distance[source-1][dest-1];
+
+    if(direct_distance == -1) {
+        printf("\nNo direct route available between these cities!\n");
+        return;
+    }
+
+    // Store delivery
+    Delivery *delivery = &deliveries[delivery_count];
+    delivery->source_city = source-1;
+    delivery->dest_city = dest-1;
+    delivery->weight = weight;
+    delivery->vehicle_type = vehicle_type-1;
+    delivery->distance = direct_distance;
+    delivery->is_completed = 1;
+
+    calculateDelivery(source-1, dest-1, weight, vehicle_type-1, direct_distance);
+    delivery_count++;
 }
