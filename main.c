@@ -490,7 +490,7 @@ void calculateDelivery(int source, int dest, int weight, int vehicle_type, float
     printf("Vehicle: %s\n", vehicle->name);
     printf("Weight: %d kg\n", weight);
     printf("------------------------------------------------------\n");
-    printf("Base Cost: %.2f  × %.2f  × (1 + %d/10000) = %.2f LKR\n",
+    printf("Base Cost: %.2f  Ã— %.2f  Ã— (1 + %d/10000) = %.2f LKR\n",
            dist, vehicle->rate_per_km, weight, delivery->delivery_cost);
     printf("Fuel Used: %.2f L\n", delivery->fuel_used);
     printf("Fuel Cost: %.2f LKR\n", delivery->fuel_cost);
@@ -523,4 +523,117 @@ void deliveryRecords() {
         total_revenue += d->customer_charge;
     }
     printf("\nTotal Revenue: %.2f LKR\n", total_revenue);
+}
+// Find Least Cost Route
+void findLeastCostRoute() {
+    if(city_count < 2) {
+        printf("\nNeed at least 2 cities!\n");
+        return;
+    }
+
+    displayCities();
+    int source, dest, weight, vehicle_type;
+
+    printf("\n--- FIND LEAST COST ROUTE ---\n");
+    printf("Enter source city number: ");
+    scanf("%d", &source);
+    printf("Enter destination city number: ");
+    scanf("%d", &dest);
+
+    if(source < 1 || source > city_count || dest < 1 || dest > city_count) {
+        printf("\nInvalid city numbers!\n");
+        return;
+    }
+
+    if(source == dest) {
+        printf("\nSource and destination cannot be the same!\n");
+        return;
+    }
+
+    printf("Enter weight (kg): ");
+    scanf("%d", &weight);
+
+    if(weight <= 0) {
+        printf("\nWeight must be positive!\n");
+        return;
+    }
+
+    vehicleManagement();
+    printf("\nSelect vehicle type (1=Van, 2=Truck, 3=Lorry): ");
+    scanf("%d", &vehicle_type);
+
+    if(vehicle_type < 1 || vehicle_type > 3) {
+        printf("\nInvalid vehicle type!\n");
+        return;
+    }
+
+    // Check weight capacity
+    if(weight > vehicles[vehicle_type-1].capacity) {
+        printf("\nWeight exceeds vehicle capacity!\n");
+        return;
+    }
+
+    source--; dest--; vehicle_type--;
+
+    // Find all possible routes using permutations (brute force)
+    int available_cities[MAX_CITIES];
+    int available_count = 0;
+
+    // Include only cities that have connections
+    for(int i = 0; i < city_count; i++) {
+        if(i != source && i != dest) {
+            // Check if this city has connections to both source and destination
+            if(distance[source][i] != -1 && distance[i][dest] != -1) {
+                available_cities[available_count++] = i;
+            }
+        }
+    }
+
+    // Limit to reasonable number of intermediate cities
+    if(available_count > 6) {
+        available_count = 6; // Limit for performance
+    }
+
+    float min_distance = distance[source][dest];
+    int best_route[MAX_ROUTE_LENGTH];
+    int route_length = 2;
+    best_route[0] = source;
+    best_route[1] = dest;
+
+    // Try routes with 1 intermediate city
+    for(int i = 0; i < available_count; i++) {
+        int route[3] = {source, available_cities[i], dest};
+        float route_dist = calculateRouteDistance(route, 3);
+        if(route_dist != -1 && route_dist < min_distance) {
+            min_distance = route_dist;
+            route_length = 3;
+            memcpy(best_route, route, sizeof(route));
+        }
+    }
+
+    // Try routes with 2 intermediate cities
+    if(available_count >= 2) {
+        for(int i = 0; i < available_count; i++) {
+            for(int j = i+1; j < available_count; j++) {
+                int route[4] = {source, available_cities[i], available_cities[j], dest};
+                float route_dist = calculateRouteDistance(route, 4);
+                if(route_dist != -1 && route_dist < min_distance) {
+                    min_distance = route_dist;
+                    route_length = 4;
+                    memcpy(best_route, route, sizeof(int) * 4);
+                }
+            }
+        }
+    }
+
+    printf("\n--- LEAST COST ROUTE FOUND ---\n");
+    printf("Route: ");
+    for(int i = 0; i < route_length; i++) {
+        printf("%s", cities[best_route[i]]);
+        if(i < route_length - 1) printf(" â†’ ");
+    }
+    printf("\nTotal Distance: %.2f km\n", min_distance);
+
+    // Calculate and display costs for this route
+    calculateDelivery(source, dest, weight, vehicle_type, min_distance);
 }
