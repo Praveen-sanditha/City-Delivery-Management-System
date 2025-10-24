@@ -343,3 +343,28 @@ void inputDistance() {
     distance[city2-1][city1-1] = dist; // Make symmetrical
     printf("\nDistance updated successfully!\n");
 }
+// Display Distance Table
+void displayDistanceTable() {
+    if(city_count == 0) {
+        printf("\nNo cities available!\n");
+        return;
+    }
+
+    printf("\n--- DISTANCE TABLE (km) ---\n");
+    printf("%-15s", "");
+    for(int i = 0; i < city_count; i++) {
+        printf("%-15s", cities[i]);
+    }
+    printf("\n");
+
+    for(int i = 0; i < city_count; i++) {
+        printf("%-15s", cities[i]);
+        for(int j = 0; j < city_count; j++) {
+            if(distance[i][j] == -1)
+                printf("%-15s", "N/A");
+            else
+                printf("%-15.1f", distance[i][j]);
+        }
+        printf("\n");
+    }
+}
