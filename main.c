@@ -458,3 +458,45 @@ void deliveryRequest() {
     calculateDelivery(source-1, dest-1, weight, vehicle_type-1, direct_distance);
     delivery_count++;
 }
+
+// Calculate Delivery and Display
+void calculateDelivery(int source, int dest, int weight, int vehicle_type, float dist)
+{
+    Vehicle *vehicle = &vehicles[vehicle_type];
+    Delivery *delivery = &deliveries[delivery_count];
+
+    //  Delivery Cost
+    delivery->delivery_cost = dist * vehicle->rate_per_km * (1 + weight / 10000.0);
+    //  Estimated Delivery Time
+    delivery->estimated_time = dist / vehicle->avg_speed;
+    //  Fuel Consumption
+    delivery->fuel_used = dist / vehicle->fuel_efficiency;
+    //  Fuel Cost
+    delivery->fuel_cost = delivery->fuel_used * FUEL_PRICE;
+    //  Total Operational Cost
+    delivery->operational_cost = delivery->delivery_cost + delivery->fuel_cost;
+    //  Profit (25% markup on base delivery cost)
+    delivery->profit = delivery->delivery_cost * 0.25;
+    //  Final Charge to Customer
+    delivery->customer_charge = delivery->operational_cost + delivery->profit;
+
+    // Display results
+    printf("\n======================================================\n");
+    printf("DELIVERY COST ESTIMATION\n");
+    printf("------------------------------------------------------\n");
+    printf("From: %s\n", cities[source]);
+    printf("To: %s\n", cities[dest]);
+    printf("Distance: %.2f km\n", dist);
+    printf("Vehicle: %s\n", vehicle->name);
+    printf("Weight: %d kg\n", weight);
+    printf("------------------------------------------------------\n");
+    printf("Base Cost: %.2f  × %.2f  × (1 + %d/10000) = %.2f LKR\n",
+           dist, vehicle->rate_per_km, weight, delivery->delivery_cost);
+    printf("Fuel Used: %.2f L\n", delivery->fuel_used);
+    printf("Fuel Cost: %.2f LKR\n", delivery->fuel_cost);
+    printf("Operational Cost: %.2f LKR\n", delivery->operational_cost);
+    printf("Profit: %.2f LKR\n", delivery->profit);
+    printf("Customer Charge: %.2f LKR\n", delivery->customer_charge);
+    printf("Estimated Time: %.2f hours\n", delivery->estimated_time);
+    printf("======================================================\n");
+}
