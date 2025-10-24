@@ -500,3 +500,27 @@ void calculateDelivery(int source, int dest, int weight, int vehicle_type, float
     printf("Estimated Time: %.2f hours\n", delivery->estimated_time);
     printf("======================================================\n");
 }
+
+// Delivery Records
+void deliveryRecords() {
+    if(delivery_count == 0) {
+        printf("\nNo delivery records available!\n");
+        return;
+    }
+
+    printf("\n--- DELIVERY RECORDS ---\n");
+    printf("%-3s %-15s %-15s %-8s %-10s %-10s %-15s\n",
+           "No", "From", "To", "Weight", "Vehicle", "Distance", "Charge(LKR)");
+    printf("-----------------------------------------------------------------------------\n");
+
+    float total_revenue = 0;
+    for(int i = 0; i < delivery_count; i++) {
+        Delivery *d = &deliveries[i];
+        printf("%-3d %-15s %-15s %-8d %-10s %-10.2f %-15.2f\n",
+               i+1, cities[d->source_city], cities[d->dest_city],
+               d->weight, vehicles[d->vehicle_type].name,
+               d->distance, d->customer_charge);
+        total_revenue += d->customer_charge;
+    }
+    printf("\nTotal Revenue: %.2f LKR\n", total_revenue);
+}
