@@ -637,3 +637,14 @@ void findLeastCostRoute() {
     // Calculate and display costs for this route
     calculateDelivery(source, dest, weight, vehicle_type, min_distance);
 }
+// Calculate Route Distance
+float calculateRouteDistance(int route[], int n) {
+    float total = 0;
+    for(int i = 0; i < n-1; i++) {
+        if(distance[route[i]][route[i+1]] == -1) {
+            return -1; // Invalid route
+        }
+        total += distance[route[i]][route[i+1]];
+    }
+    return total;
+}
