@@ -305,4 +305,41 @@ void distanceManagement() {
         }
     } while(choice != 3);
 }
+// Input distance function
+void inputDistance() {
+    if(city_count < 2) {
+        printf("\nNeed at least 2 cities to input distances!\n");
+        return;
+    }
 
+    displayCities();
+    int city1, city2;
+    float dist;
+
+    printf("\nEnter first city number: ");
+    scanf("%d", &city1);
+    printf("Enter second city number: ");
+    scanf("%d", &city2);
+
+    if(city1 < 1 || city1 > city_count || city2 < 1 || city2 > city_count) {
+        printf("\nInvalid city numbers!\n");
+        return;
+    }
+
+    if(city1 == city2) {
+        printf("\nDistance from a city to itself is always 0!\n");
+        return;
+    }
+
+    printf("Enter distance between %s and %s (km): ", cities[city1-1], cities[city2-1]);
+    scanf("%f", &dist);
+
+    if(dist < 0) {
+        printf("\nDistance cannot be negative!\n");
+        return;
+    }
+
+    distance[city1-1][city2-1] = dist;
+    distance[city2-1][city1-1] = dist; // Make symmetrical
+    printf("\nDistance updated successfully!\n");
+}
