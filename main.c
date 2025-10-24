@@ -361,10 +361,23 @@ void displayDistanceTable() {
         printf("%-15s", cities[i]);
         for(int j = 0; j < city_count; j++) {
             if(distance[i][j] == -1)
-                printf("%-15s", "N/A");
+                            printf("%-15s", "N/A");
             else
                 printf("%-15.1f", distance[i][j]);
         }
         printf("\n");
+    }
+}
+// Vehicle Management
+void vehicleManagement() {
+    printf("\n--- VEHICLE INFORMATION ---\n");
+    printf("%-10s %-12s %-15s %-12s %-15s\n",
+           "Type", "Capacity(kg)", "Rate/km(LKR)", "Speed(km/h)", "Efficiency(km/l)");
+    printf("----------------------------------------------------------------\n");
+
+    for(int i = 0; i < 3; i++) {
+        printf("%-10s %-12d %-15.2f %-12.2f %-15.2f\n",
+               vehicles[i].name, vehicles[i].capacity, vehicles[i].rate_per_km,
+               vehicles[i].avg_speed, vehicles[i].fuel_efficiency)
     }
 }
